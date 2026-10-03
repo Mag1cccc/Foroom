@@ -16,6 +16,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments["clearPackageData"] = "true" // დამატებულია
     }
 
     buildTypes {
@@ -45,6 +46,9 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    testOptions { // დამატებულია
+        execution = "ANDROIDX_TEST_ORCHESTRATOR"
+    }
 }
 
 dependencies {
@@ -72,4 +76,5 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    androidTestUtil("androidx.test:orchestrator:1.5.1")
 }
