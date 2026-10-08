@@ -503,22 +503,18 @@ fun scrollSlowlyUp() {
     swiper(100, 775, 100)
 }
 
-fun swiper(start: Int, end: Int, delay: Int) {
-    val inst = getInstrumentation()
-    val x = inst.targetContext.resources.displayMetrics.widthPixels / 2f
-    val downTime = SystemClock.uptimeMillis()
-    val duration = delay.coerceAtLeast(200)
-    fun send(action: Int, y: Float) {
-        val event = MotionEvent.obtain(downTime, SystemClock.uptimeMillis(), action, x, y, 0)
-        try { inst.sendPointerSync(event) } finally { event.recycle() }
-    }
-    send(MotionEvent.ACTION_DOWN, start.toFloat())
-    for (step in 1..10) {
-        SystemClock.sleep((duration / 10).toLong())
-        send(MotionEvent.ACTION_MOVE, start + (end - start) * step / 10f)
-    }
-    send(MotionEvent.ACTION_UP, end.toFloat())
-    inst.waitForIdleSync()
+fun swiper(start: Int, end: Int, delay: Int, x: Float = 500f) {
+    val downTime: Long = SystemClock.uptimeMillis()
+    var eventTime: Long = SystemClock.uptimeMillis()
+    val inst: Instrumentation = getInstrumentation()
+    var event = MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_DOWN, x, start.toFloat(), 0)
+    inst.sendPointerSync(event)
+    eventTime = SystemClock.uptimeMillis() + delay
+    event = MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_MOVE, x, end.toFloat(), 0)
+    inst.sendPointerSync(event)
+    event = MotionEvent.obtain(downTime, eventTime, MotionEvent.ACTION_UP, x, end.toFloat(), 0)
+    inst.sendPointerSync(event)
+    SystemClock.sleep(2000) // The wait is important to scroll
 }
 
 enum class Direction {
